@@ -1,8 +1,9 @@
 {
-    "name": "space invaders base defender",
+    "name": "space invaders base defender - Copy",
     "description": "",
     "dependencies": {
-        "device": "*"
+        "device": "*",
+        "pxt-status-bar": "github:jwunderl/pxt-status-bar#v0.4.1"
     },
     "files": [
         "main.blocks",

@@ -5,6 +5,9 @@ namespace SpriteKind {
     export const superProjectile = SpriteKind.create()
     export const brokenShip = SpriteKind.create()
 }
+namespace StatusBarKind {
+    export const turrets = StatusBarKind.create()
+}
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     cursurPostion_row += -1
     if (cursurPostion_row <= 0) {
@@ -18,51 +21,6 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
         cursurPostion_col = 10
     }
     tiles.placeOnTile(cursur, tiles.getTileLocation(cursurPostion_col, cursurPostion_row))
-})
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (cursur.tileKindAt(TileDirection.Center, assets.tile`myTile6`)) {
-        if (Math.percentChance(50)) {
-            missle_turret = sprites.create(img`
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . e e e e e e e e e . . . . . 
-                . e e d d d d d d b e . . . . . 
-                e e e d d d d d d b e . . . . . 
-                e e e d d d d d d b e . . . . . 
-                e e e d d d d d d b e e e f f e 
-                e e e d d d d d d b e e e f f e 
-                e e e d d d d d d b e e e f f e 
-                e e e d d d d d d b e . . . . . 
-                e e e d d d d d d b e . . . . . 
-                c e e d d d d d d b e . . . . . 
-                c c e b b b b b b b e . . . . . 
-                . c c c c c c c c c c . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                `, SpriteKind.missleDefense)
-            tiles.placeOnTile(missle_turret, tiles.getTileLocation(cursurPostion_col, cursurPostion_row))
-        } else {
-            turret = sprites.create(img`
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . e e e e e e e e e e e e f e 
-                . e e d d d d d d b e e e e f e 
-                e e e d d d d d d b e . . . . . 
-                e e e d d d d d d b e . . . . . 
-                e e e d d d d d d b e . . . . . 
-                e e e d d d d d d b e . . . . . 
-                e e e d d d d d d b e . . . . . 
-                e e e d d d d d d b e . . . . . 
-                e e e d d d d d d b e . . . . . 
-                c e e d d d d d d b e e e e f e 
-                c c e b b b b b b b e e e e f e 
-                . c c c c c c c c c c c c c c c 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                `, SpriteKind.defense)
-            tiles.placeOnTile(turret, tiles.getTileLocation(cursurPostion_col, cursurPostion_row))
-        }
-    }
 })
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.missleDefense, function (sprite, otherSprite) {
     broken_turret = sprites.create(img`
@@ -163,6 +121,7 @@ sprites.onOverlap(SpriteKind.Enemy, SpriteKind.missleDefense, function (sprite, 
 sprites.onOverlap(SpriteKind.Player, SpriteKind.missleDefense, function (sprite, otherSprite) {
     if (controller.B.isPressed()) {
         otherSprite.destroy()
+        statusbar.value += 50
     }
 })
 sprites.onOverlap(SpriteKind.superProjectile, SpriteKind.brokenShip, function (sprite, otherSprite) {
@@ -279,6 +238,55 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.brokenShip, function (sprite
     sprite.destroy(effects.disintegrate, 100)
     otherSprite.destroy(effects.disintegrate, 100)
 })
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (statusbar.value != 0) {
+        if (cursur.tileKindAt(TileDirection.Center, assets.tile`myTile6`)) {
+            if (Math.percentChance(50)) {
+                missle_turret = sprites.create(img`
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . e e e e e e e e e . . . . . 
+                    . e e d d d d d d b e . . . . . 
+                    e e e d d d d d d b e . . . . . 
+                    e e e d d d d d d b e . . . . . 
+                    e e e d d d d d d b e e e f f e 
+                    e e e d d d d d d b e e e f f e 
+                    e e e d d d d d d b e e e f f e 
+                    e e e d d d d d d b e . . . . . 
+                    e e e d d d d d d b e . . . . . 
+                    c e e d d d d d d b e . . . . . 
+                    c c e b b b b b b b e . . . . . 
+                    . c c c c c c c c c c . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    `, SpriteKind.missleDefense)
+                tiles.placeOnTile(missle_turret, tiles.getTileLocation(cursurPostion_col, cursurPostion_row))
+                statusbar.value += -50
+            } else {
+                turret = sprites.create(img`
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . e e e e e e e e e e e e f e 
+                    . e e d d d d d d b e e e e f e 
+                    e e e d d d d d d b e . . . . . 
+                    e e e d d d d d d b e . . . . . 
+                    e e e d d d d d d b e . . . . . 
+                    e e e d d d d d d b e . . . . . 
+                    e e e d d d d d d b e . . . . . 
+                    e e e d d d d d d b e . . . . . 
+                    e e e d d d d d d b e . . . . . 
+                    c e e d d d d d d b e e e e f e 
+                    c c e b b b b b b b e e e e f e 
+                    . c c c c c c c c c c c c c c c 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    `, SpriteKind.defense)
+                tiles.placeOnTile(turret, tiles.getTileLocation(cursurPostion_col, cursurPostion_row))
+                statusbar.value += -50
+            }
+        }
+    }
+})
 sprites.onOverlap(SpriteKind.superProjectile, SpriteKind.Enemy, function (sprite, otherSprite) {
     otherSprite.destroy(effects.fire, 500)
     info.changeScoreBy(1)
@@ -306,6 +314,7 @@ sprites.onOverlap(SpriteKind.superProjectile, SpriteKind.Enemy, function (sprite
 sprites.onOverlap(SpriteKind.Player, SpriteKind.brokenDefense, function (sprite, otherSprite) {
     if (controller.B.isPressed()) {
         otherSprite.destroy()
+        statusbar.value += 50
     }
 })
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.defense, function (sprite, otherSprite) {
@@ -439,21 +448,94 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
 sprites.onOverlap(SpriteKind.Player, SpriteKind.defense, function (sprite, otherSprite) {
     if (controller.B.isPressed()) {
         otherSprite.destroy()
+        statusbar.value += 50
     }
 })
-let enemies: Sprite = null
 let missle: Sprite = null
+let enemies: Sprite = null
 let laser: Sprite = null
 let spritelist: Sprite[] = []
 let broken_enemy: Sprite = null
-let broken_turret: Sprite = null
 let turret: Sprite = null
 let missle_turret: Sprite = null
+let broken_turret: Sprite = null
 let achivement_3 = false
 let achivement_1 = false
 let cursurPostion_col = 0
 let cursurPostion_row = 0
+let statusbar: StatusBarSprite = null
 let cursur: Sprite = null
+game.setDialogFrame(img`
+    999999999999999999999999999999999999999999999999
+    999999999999999999999999999999999999999999999999
+    999911119999119991111999111199999999119999999999
+    999111111191111911111191111119911191111991111999
+    999111111111111111111111111111111111111911111199
+    999111111111111111111111111111111111111111111199
+    999111111111111111111111111111111111111111111199
+    999911111111111111111111111111111111111111111199
+    999991111111111111111111111111111111111111111999
+    999111111111111111111111111111111111111111111999
+    991111111111111111111111111111111111111111119999
+    991111111111111111111111111111111111111111111999
+    999111111111111111111111111111111111111111111199
+    999911111111111111111111111111111111111111111199
+    999111111111111111111111111111111111111111111999
+    999111111111111111111111111111111111111111119999
+    999111111111111111111111111111111111111111111999
+    999911111111111111111111111111111111111111111199
+    999911111111111111111111111111111111111111111199
+    999111111111111111111111111111111111111111111199
+    991111111111111111111111111111111111111111111199
+    991111111111111111111111111111111111111111111999
+    991111111111111111111111111111111111111111119999
+    991111111111111111111111111111111111111111111999
+    999111111111111111111111111111111111111111111199
+    999911111111111111111111111111111111111111111199
+    999111111111111111111111111111111111111111111199
+    991111111111111111111111111111111111111111111199
+    991111111111111111111111111111111111111111111999
+    991111111111111111111111111111111111111111119999
+    991111111111111111111111111111111111111111119999
+    999111111111111111111111111111111111111111111999
+    99d1111111111111111111111111111111111dd111111199
+    9ddd111111111111111111111111111111111dd111111199
+    9ddd1111111111dd111111111111111111111dd1111dd199
+    9d1d111111111ddddd11111111111ddddd111ddd111ddd99
+    9ddd111ddd111d111d1111ddddd11d111d11dddd111ddd99
+    9d1d11ddddd11ddddd1111ddddd11ddddd11d1dd111ddd99
+    9ddd11d1d1d11d111d1dd1d1ddd11d111d11dddddddddd99
+    9d1d11ddddd11ddddd1dd1ddd1d11ddddddddd1ddd111ddd
+    dddd11d1d1d11d111d1dd1ddddd11d111ddddddddddddddd
+    dd1d1ddddddddddddd1dd1d1ddddddddddddd1dddd111ddd
+    dddd1dd1d1dddd111dddddddd1dddd111ddddddddddddddd
+    dd1d1ddddddddddddddddddddddddddddddddd1ddd111ddd
+    ddddddddddddddddddddddd1dddddddddddddddddddddddd
+    ddddddddddddddddddddddddd1ddddddddddd1dddd111ddd
+    .dddddddddddddddddddddddddddddddddddddddddddddd.
+    ..dddddddddddddddddddddddddddddddddddddddddddd..
+    `)
+game.setDialogCursor(img`
+    . 9 9 9 9 9 9 9 9 9 9 9 9 9 9 . 
+    9 . . . . . . . . . . . . . . 9 
+    9 . 6 6 . . . 8 8 8 . . 6 6 . 9 
+    9 . 6 . . . . 9 . . . . . 6 . 9 
+    9 . . . . . . 9 . . . . . . . 9 
+    9 . . . . . . 9 . . . . . . . 9 
+    9 . 8 . . . . 9 . . . . . 8 . 9 
+    9 . 8 9 9 9 9 9 9 9 9 9 9 8 . 9 
+    9 . 8 . . . . 9 . . . . . 8 . 9 
+    9 . . . . . . 9 . . . . . . . 9 
+    9 . . . . . . 9 . . . . . . . 9 
+    9 . . . . . . 9 . . . . . . . 9 
+    9 . 6 . . . . 9 . . . . . 6 . 9 
+    9 . 6 6 . . 8 8 8 . . . 6 6 . 9 
+    9 . . . . . . . . . . . . . . 9 
+    . 9 9 9 9 9 9 9 9 9 9 9 9 9 9 . 
+    `)
+game.showLongText("controlls are: arow keys or w,s,a,d keys and spacebar to create turret and enter to dystroy a turret", DialogLayout.Full)
+game.showLongText("and you can only put 2 turrets at a time", DialogLayout.Full)
+game.showLongText("tip: by dystroying turrets and makeing them somewere else is how to play this game ", DialogLayout.Full)
 tiles.setCurrentTilemap(tilemap`level1`)
 info.setLife(500)
 scene.centerCameraAt(96, 70)
@@ -464,10 +546,10 @@ cursur = sprites.create(img`
     9 . 6 . . . . 9 . . . . . 6 . 9 
     9 . . . . . . 9 . . . . . . . 9 
     9 . . . . . . 9 . . . . . . . 9 
-    9 . 8 . . . . 9 . . . . . . . 9 
+    9 . 8 . . . . 9 . . . . . 8 . 9 
     9 . 8 9 9 9 9 9 9 9 9 9 9 8 . 9 
     9 . 8 . . . . 9 . . . . . 8 . 9 
-    9 . . . . . . 9 . . . . . 8 . 9 
+    9 . . . . . . 9 . . . . . . . 9 
     9 . . . . . . 9 . . . . . . . 9 
     9 . . . . . . 9 . . . . . . . 9 
     9 . 6 . . . . 9 . . . . . 6 . 9 
@@ -475,6 +557,10 @@ cursur = sprites.create(img`
     9 . . . . . . . . . . . . . . 9 
     . 9 9 9 9 9 9 9 9 9 9 9 9 9 9 . 
     `, SpriteKind.Player)
+statusbar = statusbars.create(20, 2, StatusBarKind.turrets)
+statusbar.setColor(7, 12)
+statusbar.setPosition(70, 98)
+statusbar.setLabel("Turrets", 2)
 cursurPostion_row = 4
 cursurPostion_col = 4
 tiles.placeOnTile(cursur, tiles.getTileLocation(cursurPostion_col, cursurPostion_row))
@@ -580,6 +666,29 @@ game.onUpdateInterval(500, function () {
     }
 })
 game.onUpdateInterval(2000, function () {
+    enemies = sprites.createProjectileFromSide(img`
+        . . . . . . . . . . . . . . e e 
+        . . . . . . . . . . . . . e e e 
+        . . . . . . . . . . . . e e 2 2 
+        . . . . . . . . . . . . e 2 2 4 
+        . . . . . . . . . . . e f 4 4 2 
+        . . . . . . . . . . e e f 2 2 2 
+        . . . . . . . . e e e 4 e 2 2 2 
+        d d d b f 2 f 2 4 4 e 2 e 2 2 2 
+        c c c c f c f e e 2 c 2 c 2 e e 
+        . . . . . . . . e e c 2 c e e e 
+        . . . . . . . . . . c e f e c c 
+        . . . . . . . . . . . e f c c c 
+        . . . . . . . . . . . . f c c c 
+        . . . . . . . . . . . . c c c c 
+        . . . . . . . . . . . . . c c c 
+        . . . . . . . . . . . . . . c c 
+        `, -20, 0)
+    enemies.setKind(SpriteKind.Enemy)
+    enemies.setFlag(SpriteFlag.DestroyOnWall, true)
+    tiles.placeOnRandomTile(enemies, assets.tile`myTile8`)
+})
+game.onUpdateInterval(2000, function () {
     spritelist = sprites.allOfKind(SpriteKind.missleDefense)
     for (let value of spritelist) {
         missle = sprites.createProjectileFromSprite(img`
@@ -603,26 +712,8 @@ game.onUpdateInterval(2000, function () {
         missle.setKind(SpriteKind.superProjectile)
     }
 })
-game.onUpdateInterval(1000, function () {
-    enemies = sprites.createProjectileFromSide(img`
-        . . . . . . . . . . . . . . e e 
-        . . . . . . . . . . . . . e e e 
-        . . . . . . . . . . . . e e 2 2 
-        . . . . . . . . . . . . e 2 2 4 
-        . . . . . . . . . . . e f 4 4 2 
-        . . . . . . . . . . e e f 2 2 2 
-        . . . . . . . . e e e 4 e 2 2 2 
-        d d d b f 2 f 2 4 4 e 2 e 2 2 2 
-        c c c c f c f e e 2 c 2 c 2 e e 
-        . . . . . . . . e e c 2 c e e e 
-        . . . . . . . . . . c e f e c c 
-        . . . . . . . . . . . e f c c c 
-        . . . . . . . . . . . . f c c c 
-        . . . . . . . . . . . . c c c c 
-        . . . . . . . . . . . . . c c c 
-        . . . . . . . . . . . . . . c c 
-        `, -20, 0)
-    enemies.setKind(SpriteKind.Enemy)
-    enemies.setFlag(SpriteFlag.DestroyOnWall, true)
-    tiles.placeOnRandomTile(enemies, assets.tile`myTile8`)
+forever(function () {
+    if (info.score() == 100) {
+        game.over(true, effects.starField)
+    }
 })
