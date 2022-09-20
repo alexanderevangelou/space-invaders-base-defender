@@ -437,6 +437,9 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, oth
         `, SpriteKind.brokenShip)
     broken_enemy.x = otherSprite.x
     broken_enemy.y = otherSprite.y
+    if (info.score() % 10 == 0) {
+        enemySpeed += -10
+    }
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     cursurPostion_col += 1
@@ -465,6 +468,98 @@ let cursurPostion_col = 0
 let cursurPostion_row = 0
 let statusbar: StatusBarSprite = null
 let cursur: Sprite = null
+let enemy_list = [
+img`
+    . . . . . . . . . . . . . . e e 
+    . . . . . . . . . . . . . e e e 
+    . . . . . . . . . . . . e e 2 2 
+    . . . . . . . . . . . . e 2 2 4 
+    . . . . . . . . . . . e f 4 4 2 
+    . . . . . . . . . . e e f 2 2 2 
+    . . . . . . . . e e e 4 e 2 2 2 
+    d d d b f 2 f 2 4 4 e 2 e 2 2 2 
+    c c c c f c f e e 2 c 2 c 2 e e 
+    . . . . . . . . e e c 2 c e e e 
+    . . . . . . . . . . c e f e c c 
+    . . . . . . . . . . . e f c c c 
+    . . . . . . . . . . . . f c c c 
+    . . . . . . . . . . . . c c c c 
+    . . . . . . . . . . . . . c c c 
+    . . . . . . . . . . . . . . c c 
+    `,
+img`
+    . . . . . . . . . . . . . . 2 2 
+    . . . . . . . . . . . . . 2 2 2 
+    . . . . . . . . . . . . 2 2 4 4 
+    . . . . . . . . . . . . 2 4 4 5 
+    . . . . . . . . . . . 2 f 5 5 4 
+    . . . . . . . . . . 2 2 f 4 4 4 
+    . . . . . . . . 2 2 2 5 2 4 4 4 
+    d d d b f 4 f 4 5 5 2 4 2 4 4 4 
+    c c c c f c f e e 4 c 4 c 4 2 2 
+    . . . . . . . . e e c 4 c 2 2 2 
+    . . . . . . . . . . c e f 2 e e 
+    . . . . . . . . . . . e f e e e 
+    . . . . . . . . . . . . f e e e 
+    . . . . . . . . . . . . e e e e 
+    . . . . . . . . . . . . . e e e 
+    . . . . . . . . . . . . . . e e 
+    `,
+img`
+    . . . . . . . . . . . . . . a a 
+    . . . . . . . . . . . . . a a a 
+    . . . . . . . . . . . . a a 3 3 
+    . . . . . . . . . . . . a 3 3 1 
+    . . . . . . . . . . . a f 1 1 3 
+    . . . . . . . . . . a a f 3 3 3 
+    . . . . . . . . a a a 1 a 3 3 3 
+    d d d b f 3 f 3 1 1 a 3 a 3 3 3 
+    c c c c f c f 8 8 3 c 3 c 3 a a 
+    . . . . . . . . 8 8 c 3 c a a a 
+    . . . . . . . . . . c 8 f a 8 8 
+    . . . . . . . . . . . 8 f 8 8 8 
+    . . . . . . . . . . . . f 8 8 8 
+    . . . . . . . . . . . . 8 8 8 8 
+    . . . . . . . . . . . . . 8 8 8 
+    . . . . . . . . . . . . . . 8 8 
+    `,
+img`
+    . . . . . . . . . . . . . . 8 8 
+    . . . . . . . . . . . . . 8 8 8 
+    . . . . . . . . . . . . 8 8 6 6 
+    . . . . . . . . . . . . 8 6 6 9 
+    . . . . . . . . . . . 8 f 9 9 6 
+    . . . . . . . . . . 8 8 f 6 6 6 
+    . . . . . . . . 8 8 8 9 e 6 6 6 
+    d d d b f 6 f 6 9 9 8 6 e 6 6 6 
+    c c c c f c f 8 8 6 c 6 c 6 8 8 
+    . . . . . . . . 8 8 c 6 c 8 8 8 
+    . . . . . . . . . . c 8 f 8 8 8 
+    . . . . . . . . . . . 8 f 8 8 8 
+    . . . . . . . . . . . . f 8 8 8 
+    . . . . . . . . . . . . 8 8 8 8 
+    . . . . . . . . . . . . . 8 8 8 
+    . . . . . . . . . . . . . . 8 8 
+    `,
+img`
+    . . . . . . . . . . . . . . 6 6 
+    . . . . . . . . . . . . . 6 6 6 
+    . . . . . . . . . . . . 6 6 7 7 
+    . . . . . . . . . . . . 6 7 7 5 
+    . . . . . . . . . . . 6 f 5 5 7 
+    . . . . . . . . . . 6 6 f 7 7 7 
+    . . . . . . . . 6 6 6 5 6 7 7 7 
+    d d d b f 7 f 7 5 5 6 7 6 7 7 7 
+    c c c c f c f 8 8 7 c 7 c 7 6 6 
+    . . . . . . . . 8 8 c 7 c 6 6 6 
+    . . . . . . . . . . c 8 f 6 8 8 
+    . . . . . . . . . . . 8 f 8 8 8 
+    . . . . . . . . . . . . f 8 8 8 
+    . . . . . . . . . . . . 8 8 8 8 
+    . . . . . . . . . . . . . 8 8 8 
+    . . . . . . . . . . . . . . 8 8 
+    `
+]
 game.setDialogFrame(img`
     999999999999999999999999999999999999999999999999
     999999999999999999999999999999999999999999999999
@@ -537,7 +632,7 @@ game.showLongText("controlls are: arow keys or w,s,a,d keys and spacebar to crea
 game.showLongText("and you can only put 2 turrets at a time", DialogLayout.Full)
 game.showLongText("tip: by dystroying turrets and makeing them somewere else is how to play this game ", DialogLayout.Full)
 tiles.setCurrentTilemap(tilemap`level1`)
-info.setLife(500)
+info.setLife(200)
 scene.centerCameraAt(96, 70)
 cursur = sprites.create(img`
     . 9 9 9 9 9 9 9 9 9 9 9 9 9 9 . 
@@ -561,6 +656,7 @@ statusbar = statusbars.create(20, 2, StatusBarKind.turrets)
 statusbar.setColor(7, 12)
 statusbar.setPosition(70, 98)
 statusbar.setLabel("Turrets", 2)
+let enemySpeed = -10
 cursurPostion_row = 4
 cursurPostion_col = 4
 tiles.placeOnTile(cursur, tiles.getTileLocation(cursurPostion_col, cursurPostion_row))
@@ -666,24 +762,7 @@ game.onUpdateInterval(500, function () {
     }
 })
 game.onUpdateInterval(2000, function () {
-    enemies = sprites.createProjectileFromSide(img`
-        . . . . . . . . . . . . . . e e 
-        . . . . . . . . . . . . . e e e 
-        . . . . . . . . . . . . e e 2 2 
-        . . . . . . . . . . . . e 2 2 4 
-        . . . . . . . . . . . e f 4 4 2 
-        . . . . . . . . . . e e f 2 2 2 
-        . . . . . . . . e e e 4 e 2 2 2 
-        d d d b f 2 f 2 4 4 e 2 e 2 2 2 
-        c c c c f c f e e 2 c 2 c 2 e e 
-        . . . . . . . . e e c 2 c e e e 
-        . . . . . . . . . . c e f e c c 
-        . . . . . . . . . . . e f c c c 
-        . . . . . . . . . . . . f c c c 
-        . . . . . . . . . . . . c c c c 
-        . . . . . . . . . . . . . c c c 
-        . . . . . . . . . . . . . . c c 
-        `, -20, 0)
+    enemies = sprites.createProjectileFromSide(enemy_list._pickRandom(), enemySpeed, 0)
     enemies.setKind(SpriteKind.Enemy)
     enemies.setFlag(SpriteFlag.DestroyOnWall, true)
     tiles.placeOnRandomTile(enemies, assets.tile`myTile8`)
